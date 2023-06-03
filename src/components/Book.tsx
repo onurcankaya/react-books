@@ -1,6 +1,7 @@
 import { useState } from "react";
 import styled from "styled-components";
 import { BookType } from "../types";
+import Button from "@mui/material/Button";
 
 type BookProps = {
   book: BookType;
@@ -48,8 +49,12 @@ export const Book = ({ book, handleDeleteBook }: BookProps) => {
   return (
     <div>
       <div>
-        <button onClick={handleToggleEdit}>Edit</button>
-        <button onClick={() => handleDeleteBook(book.id)}>Delete</button>
+        <Button variant="contained" onClick={handleToggleEdit}>
+          Edit
+        </Button>
+        <Button variant="contained" onClick={() => handleDeleteBook(book.id)}>
+          Delete
+        </Button>
       </div>
       <BookCover src={book.cover} alt="" />
       {isEditing ? (

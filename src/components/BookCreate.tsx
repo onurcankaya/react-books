@@ -1,5 +1,7 @@
 import { useState } from "react";
 import styled from "styled-components";
+import Button from "@mui/material/Button";
+import TextField from "@mui/material/TextField";
 
 type BookCreateProps = {
   handleCreateBook: (bookTitle: string) => void;
@@ -27,9 +29,14 @@ export const BookCreate = ({ handleCreateBook }: BookCreateProps) => {
     <div>
       <BookCreateTitle>Add a Book</BookCreateTitle>
       <form action="" onSubmit={handleSubmit}>
-        <label htmlFor="">Title: </label>
-        <input type="text" onChange={handleBookTitleChange} value={bookTitle} />
-        <button>Submit</button>
+        <TextField
+          className="add-book-input"
+          label="Title"
+          variant="outlined"
+          onChange={handleBookTitleChange}
+          value={bookTitle}
+        />
+        <Button variant="contained">Submit</Button>
       </form>
     </div>
   );
