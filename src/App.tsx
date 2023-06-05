@@ -1,65 +1,72 @@
-import styled from "styled-components";
-import { v4 as uuidv4 } from "uuid";
-import { useState } from "react";
-import { BookCreate, BookList } from "./components";
-import NorwegianWood from "./assets/norwegian-wood.jpeg";
-import KafkaOnTheShore from "./assets/kafka-on-the-shore.jpeg";
-import Cover1Q84 from "./assets/1Q84.jpeg";
-import DefaultCover from "./assets/image.png";
-import { BookType } from "./types";
+import { v4 as uuidv4 } from 'uuid';
+import { useEffect, useState } from 'react';
+import { BookCreate, BookList } from './components';
+import DefaultCover from './assets/image.png';
+import { BookType } from './types';
+import axios from 'axios';
 
-const mockData: BookType[] = [
-  {
-    id: "0",
-    cover: NorwegianWood,
-    title: "Norwegian Wood",
-  },
-  {
-    id: "1",
-    cover: KafkaOnTheShore,
-    title: "Kafka on the Shore",
-  },
-  {
-    id: "2",
-    cover: Cover1Q84,
-    title: "1Q84",
-  },
-];
-
-const AppContainer = styled.div`
-  width: 1000px;
-  padding: 20px;
-  margin: 0 auto;
-`;
-
-const AppTitle = styled.div`
-  font-size: 24px;
-  text-align: center;
-  margin-bottom: 20px;
-`;
+import styles from './App.module.scss';
 
 export const App = () => {
-  const [books, setBooks] = useState(mockData);
+  const [books, setBooks] = useState<BookType[]>([]);
 
-  const handleDeleteBook = (id: string) => {
-    const updatedBooks = books.filter((book) => book.id !== id);
-    setBooks(updatedBooks);
+  const fetchBooks = async () => {
+    const response = await fetch('http://localhost:3001/books');
+    const jsonData = await response.json();
+    setBooks(jsonData);
   };
 
-  const handleCreateBook = (bookTitle: string) => {
+  useEffect(() => {
+    fetchBooks();
+  }, []);
+  const handleCreateBook = async (bookTitle: string) => {
     const newBook = {
       id: uuidv4(),
       cover: DefaultCover,
       title: bookTitle,
     };
-    setBooks([...books, newBook]);
+
+    const response = await axios.post('http://localhost:3001/books', newBook);
+    const bookCreated = response.data;
+    const booksUpdated = [...books, bookCreated];
+    setBooks(booksUpdated);
+  };
+
+  const handleEditBookTitle = async (book: BookType, newTitle: string) => {
+    const { id } = book;
+    const bookUpdated = {
+      ...book,
+      title: newTitle,
+    };
+    const response = await axios.put(`http://localhost:3001/books/${id}`, {
+      ...bookUpdated,
+    });
+
+    const booksUpdated = books.map((book) => {
+      if (book.id === id) {
+        return { ...book, ...response.data };
+      }
+      return book;
+    });
+
+    setBooks(booksUpdated);
+  };
+
+  const handleDeleteBook = async (id: string) => {
+    await axios.delete(`http://localhost:3001/books/${id}`);
+    const booksUpdated = books.filter((book) => book.id !== id);
+    setBooks(booksUpdated);
   };
 
   return (
-    <AppContainer>
-      <AppTitle>Reading List</AppTitle>
-      <BookList books={books} handleDeleteBook={handleDeleteBook} />
+    <div className={styles.appContainer}>
+      <div className={styles.appTitle}>Reading List</div>
+      <BookList
+        books={books}
+        handleEditBookTitle={handleEditBookTitle}
+        handleDeleteBook={handleDeleteBook}
+      />
       <BookCreate handleCreateBook={handleCreateBook} />
-    </AppContainer>
+    </div>
   );
 };
