@@ -1,14 +1,15 @@
-import { useState } from "react";
-import Button from "@mui/material/Button";
-import TextField from "@mui/material/TextField";
-import styles from "./BookCreate.module.scss";
+import { useState } from 'react';
+import Button from '@mui/material/Button';
+import TextField from '@mui/material/TextField';
 
-type BookCreateProps = {
-  handleCreateBook: (bookTitle: string) => void;
-};
+import { useBooksContext } from '../../hooks/useBooksContext';
 
-export const BookCreate = ({ handleCreateBook }: BookCreateProps) => {
-  const [bookTitle, setBookTitle] = useState("");
+import styles from './BookCreate.module.scss';
+
+export const BookCreate = () => {
+  const [bookTitle, setBookTitle] = useState('');
+
+  const { createBook } = useBooksContext();
 
   const handleBookTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setBookTitle(e.target.value);
@@ -16,22 +17,22 @@ export const BookCreate = ({ handleCreateBook }: BookCreateProps) => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    handleCreateBook(bookTitle);
-    setBookTitle("");
+    createBook(bookTitle);
+    setBookTitle('');
   };
 
   return (
     <div>
       <div className={styles.bookCreateTitle}>Add a Book</div>
-      <form action="" onSubmit={handleSubmit}>
+      <form action='' onSubmit={handleSubmit}>
         <TextField
-          label="Title"
-          variant="outlined"
-          size="small"
+          label='Title'
+          variant='outlined'
+          size='small'
           onChange={handleBookTitleChange}
           value={bookTitle}
         />
-        <Button variant="contained" size="medium">
+        <Button variant='contained' size='medium'>
           Submit
         </Button>
       </form>
