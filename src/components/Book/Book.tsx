@@ -1,21 +1,20 @@
 import { useState } from 'react';
-import { BookType } from '../../types';
 import Button from '@mui/material/Button';
+
+import { useBooksContext } from '../../hooks/useBooksContext';
+import { BookType } from '../../types';
+
 import styles from './Book.module.scss';
 
 type BookProps = {
   book: BookType;
-  handleDeleteBook: (id: string) => void;
-  handleEditBookTitle: (book: BookType, newTitle: string) => void;
 };
 
-export const Book = ({
-  book,
-  handleDeleteBook,
-  handleEditBookTitle,
-}: BookProps) => {
+export const Book = ({ book }: BookProps) => {
   const [isEditing, setIsEditing] = useState(false);
   const [newBookTitle, setNewBookTitle] = useState(book.title);
+
+  const { editBookTitle, deleteBook } = useBooksContext();
 
   const handleToggleEdit = () => {
     isEditing ? setIsEditing(false) : setIsEditing(true);
@@ -23,7 +22,7 @@ export const Book = ({
 
   const handleBookTitleSave = (e: React.FormEvent) => {
     e.preventDefault();
-    handleEditBookTitle(book, newBookTitle);
+    editBookTitle(book, newBookTitle);
     setIsEditing(false);
   };
 
@@ -40,7 +39,7 @@ export const Book = ({
         <Button
           variant='contained'
           size='small'
-          onClick={() => handleDeleteBook(book.id)}
+          onClick={() => deleteBook(book.id)}
         >
           Delete
         </Button>
